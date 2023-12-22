@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Threaded Discussion</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+
+    .navbar {
+      background-color: #3498db;
+      color: #fff;
+      text-align: center;
+      padding: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .navbar-left {
+      display: flex;
+      align-items: center;
+    }
+
+    .navbar a {
+      color: #fff;
+      text-decoration: none;
+      margin: 0 10px;
+      font-size: 18px;
+    }
+
+    .navbar a:hover {
+      text-decoration: underline;
+    }
+
+    .navbar-heading {
+      margin: 0;
+      font-size: 24px;
+    }
+
+    .logout-button {
+      background-color: #2980b9;
+      color: #fff;
+      border: none;
+      padding: 8px 16px;
+      text-decoration: none;
+      font-size: 16px;
+      cursor: pointer;
+      border-radius: 5px;
+    }
+
+    .welcome-message {
+      text-align: center;
+      font-size: 20px;
+      margin: 20px 0; /* Added margin */
+    }
+
+    .discussion-container {
+      max-width: 90%;
+      margin: 20px auto;
+    }
+
+    .question {
+      margin-bottom: 10px;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+
+    .reply {
+      margin-left: 20px;
+      padding: 10px;
+      border: 1px solid #eee;
+      border-radius: 5px;
+    }
+
+    .reply-icons {
+      margin-top: 10px;
+    }
+
+    .thumbs-up {
+      color: black; /* Default color */
+      cursor: pointer;
+    }
+
+    .thumbs-up.clicked {
+      color: blue; /* Color when clicked */
+    }
+
+    .action-buttons {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 10px;
+    }
+
+    #new-question {
+      flex: 1;
+    }
+
+    .action-buttons button {
+      margin-left: 10px;
+    }
+
+  </style>
+</head>
+<body>
+
+<div class="navbar">
+  <div class="navbar-left">
+    <span class="navbar-heading">Clear Up</span>
+  </div>
+  <div>
+    <a href="#">HOME</a>
+    <a href="#">VIDEO</a>
+    <a href="#">CONNECT</a>
+    <a href="#">PROFILE</a>
+  </div>
+  <button class="logout-button" onclick="logout()">LOGOUT</button>
+</div>
+
+<div class="welcome-message">
+  Welcome to the Community !!
+</div>
+
+<div class="discussion-container">
+  <div class="action-buttons">
+    <input type="text" id="new-question" placeholder="Ask a question...">
+    <button onclick="postQuestion()">Post</button>
+    <button onclick="search()">Search</button>
+  </div>
+
+  <div id="discussion"></div>
+</div>
+
+<script>
+  function postQuestion() {
+    const loggedInUser = localStorage.getItem('loggedInUser');
+    const newQuestion = document.getElementById('new-question').value;
+
+    if (loggedInUser && newQuestion) {
+      const discussionContainer = document.getElementById('discussion');
+      const questionDiv = document.createElement('div');
+      questionDiv.className = 'question';
+      questionDiv.innerHTML = `
+        <p>${loggedInUser}: ${newQuestion}</p>
+        <div>
+          <input type="text" class="reply-input" placeholder="Reply...">
+          <button onclick="postReply(this)">Reply</button>
+        </div>
+        <div class="replies"></div>
+      `;
+      discussionContainer.appendChild(questionDiv);
+
+      document.getElementById('new-question').value = '';
+    }
+  }
+
+  function postReply(button) {
+    const loggedInUser = localStorage.getItem('loggedInUser');
+    const replyInput = button.previousElementSibling;
+    const replyContent = replyInput.value;
+
+    if (loggedInUser && replyContent) {
+      const replyDiv = document.createElement('div');
+      replyDiv.className = 'reply';
+      replyDiv.innerHTML = `
+        <p>${loggedInUser}: ${replyContent}</p>
+        <div class="reply-icons">
+          <i class="fas fa-thumbs-up thumbs-up" onclick="thumbsUp(this)"></i>
+          <span class="thumbs-up-count">0</span>
+        </div>
+      `;
+      button.parentElement.nextElementSibling.appendChild(replyDiv);
+
+      replyInput.value = '';
+    }
+  }
+
+  function thumbsUp(icon) {
+    const countElement = icon.nextElementSibling;
+    const hasClickedClass = icon.classList.contains('clicked');
+
+    if (!hasClickedClass) {
+      icon.classList.add('clicked');
+      countElement.textContent = parseInt(countElement.textContent) + 1;
+    }
+  }
+
+  function search() {
+    // Implement search functionality as needed
+    alert('Implement search functionality here');
+  }
+
+  function logout() {
+    localStorage.removeItem('loggedInUser');
+    location.reload(); // Refresh the page after logout
+  }
+
+  // Sample initial discussion
+  localStorage.setItem('loggedInUser', 'Student123');
+  postQuestion();
+  postQuestion();
+  localStorage.setItem('loggedInUser', 'Teacher456');
+  postQuestion();
+</script>
+
+</body>
+</html>
